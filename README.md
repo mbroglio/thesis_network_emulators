@@ -7,12 +7,14 @@
 [![Kathara](https://img.shields.io/badge/Emulator-Kathara-blueviolet.svg)](https://www.kathara.net/)
 [![Containernet](https://img.shields.io/badge/Emulator-Containernet-red.svg)](https://containernet.github.io/)
 [![FRRouting](https://img.shields.io/badge/Routing-FRRouting-lightgrey.svg)](https://frrouting.org/)
+[![Thesis PDF](https://img.shields.io/badge/Thesis-PDF_Report-red?logo=adobeacrobatreader&logoColor=white)](Broglio_Matteo_RelFin_LT_25072025.pdf)
 
-> Experimental framework, network topologies, and performance benchmarking testbed developed for a Master's Thesis comparative study evaluating **Mininet**, **Containernet**, and **Kathara**.
+> Experimental framework, network topologies, and performance benchmarking testbed developed for the thesis **"Comparative Study of Network Emulators: A Detailed Analysis of Mininet and Kathara"** at Università degli Studi di Milano - Bicocca.
 
 ---
 
 ## 📋 Table of Contents
+- [Thesis Report](#-thesis-report)
 - [Project Overview](#-project-overview)
 - [Emulators Comparison](#-emulators-comparison)
 - [Emulation Scenarios](#-emulation-scenarios)
@@ -29,23 +31,40 @@
   - [4. Running Resource Usage Benchmarks](#4-running-resource-usage-benchmarks)
 - [Troubleshooting & Housekeeping](#-troubleshooting--housekeeping)
 - [Repository Structure](#-repository-structure)
-- [Author & Academic Context](#-author--academic-context)
+- [Academic Credits & Citation](#-academic-credits--citation)
+
+---
+
+## 📄 Thesis Report
+
+The complete thesis document is available in this repository:
+- 📥 **[Download / View Thesis PDF (Broglio_Matteo_RelFin_LT_25072025.pdf)](Broglio_Matteo_RelFin_LT_25072025.pdf)**
+
+### Thesis Details
+- **Title**: *Comparative Study of Network Emulators: A Detailed Analysis of Mininet and Kathara*
+- **Author**: Matteo Broglio (Matricola `899562`)
+- **Supervisor (Relatore)**: Prof. Marco Savi
+- **Co-Supervisor (Correlatore)**: Dott. Jacopo Talpini
+- **Institution**: Università degli Studi di Milano - Bicocca (UNIMIB)
+- **Department**: Dipartimento di Informatica, Sistemistica e Comunicazione (DISCo)
+- **Academic Year**: 2024 - 2025
+
+### Abstract & Core Findings
+Network emulation is critical for testing, research, and education by replicating realistic network behaviors inside controlled sandbox environments. This work analyzes architectural designs, deployment overhead, runtime scalability, and usability across **Mininet**, **Kathara**, and their intersection in **Containernet**:
+- **Mininet**: Delivers outstanding resource efficiency and sub-second startup times by exploiting Linux kernel network namespaces (`netns`) and Open vSwitch (OVS). Ideal for large-scale routing graphs on constrained hardware, though sharing the underlying host filesystem and kernel.
+- **Kathara**: Leverages containerization (Docker) and virtual collision domains to enforce strict isolation, cross-platform portability (Linux, macOS, Windows), and reproducible lab environments, at the expense of higher CPU and memory overhead during container lifecycle events.
+- **Containernet**: Acts as a bridge, embedding Docker containers into Mininet's programmable OpenFlow data plane.
 
 ---
 
 ## 🌐 Project Overview
 
-Network emulators are indispensable tools for prototyping, education, and research in computer networks. Unlike discrete-event simulators (such as NS-3 or OMNeT++), network emulators run actual operating system network stacks, real routing daemons, and application protocols.
+This repository provides an empirical, reproducible testbed implementing functionally equivalent networking scenarios across all three emulators.
 
-This repository provides an empirical, reproducible testbed designed to compare three leading emulation paradigms:
-1. **Mininet**: Process-level virtualization using Linux network namespaces (`netns`) interconnected via Open vSwitch (OVS).
-2. **Kathara**: Lightweight container-based virtualization using Docker containers interconnected by virtual collision domains (`vEth` bridges).
-3. **Containernet**: An extension of Mininet that combines OVS software-defined switching with containerized Docker nodes.
-
-The comparison covers:
-- **Functional parity**: Deploying identical networking scenarios across all platforms.
-- **Protocol validation**: Validating dynamic routing (BGP, OSPF, RIP with FRR), distributed DNS hierarchies (BIND9), and web load balancing.
-- **Resource efficiency**: Profiling CPU and memory utilization (VSZ, %MEM, %CPU) under varying network loads.
+Key objectives:
+1. **Functional Equivalence**: Verifying identical behavior and convergence times across emulators for standard L2/L3 services, dynamic routing, and DNS resolution.
+2. **Protocol Integration**: Deploying production-grade protocol stacks including **FRRouting (FRR)** for BGP/OSPF/RIP and **BIND9** for hierarchical DNS.
+3. **Resource Profiling**: Measuring and visualizing real-time CPU utilization (`%CPU`) and virtual memory footprint (`VSZ`, `%MEM`) under automated benchmarking runs.
 
 ---
 
@@ -59,7 +78,7 @@ The comparison covers:
 | **SDN / OpenFlow** | Native, full OpenFlow support | No native OpenFlow (L2/L3 focused) | Full OpenFlow via OVS |
 | **Application Isolation** | Shared filesystem, isolated network | Completely isolated container filesystems | Completely isolated container filesystems |
 | **Topology Definition** | Python API (`Mininet()`) | Declarative configuration (`lab.conf`) | Python API (`Containernet()`) |
-| **Overhead** | Minimal CPU and memory footprint | Moderate (container lifecycle overhead) | Moderate (Docker + OVS orchestration) |
+| **Resource Overhead** | Minimal CPU and memory footprint | Moderate (container lifecycle overhead) | Moderate (Docker + OVS orchestration) |
 
 ---
 
@@ -263,49 +282,58 @@ Because emulation tools allocate virtual interfaces, kernel namespaces, and soft
 ## 📁 Repository Structure
 
 ```text
+├── Broglio_Matteo_RelFin_LT_25072025.pdf  # Full Thesis Report PDF
+├── README.md                              # Comprehensive Documentation
+│
 ├── Containernet/
-│   ├── DNS Kathara/               # Multi-level hierarchical DNS (Root, TLD, Auth, Web)
-│   │   ├── build-images.sh        # Docker build script for BIND9 container images
+│   ├── DNS Kathara/                       # Multi-level hierarchical DNS (Root, TLD, Auth, Web)
+│   │   ├── build-images.sh                # Docker build script for BIND9 container images
 │   │   └── containernet_dns_topo.py
-│   ├── DNS Simple/                # Single-server DNS testbed
+│   ├── DNS Simple/                        # Single-server DNS testbed
 │   │   ├── build-images.sh
 │   │   └── containernet_dns_topo.py
-│   └── start.sh                   # Helper startup script
+│   └── start.sh                           # Helper startup script
 │
 ├── Kathara/
-│   ├── Performance Test/          # Logging daemon and plotting script
+│   ├── Performance Test/                  # Logging daemon and plotting script
 │   │   ├── log_docker.sh
 │   │   └── GraphCreator.py
-│   └── ThesisLabs/                # Kathara declarative network labs
-│       ├── BGP/                   # eBGP inter-AS lab with FRR
-│       ├── Client - Server/       # Web server lab
-│       ├── DNS/                   # Hierarchical BIND9 DNS lab
-│       ├── LoadBalancer/          # Multi-backend HTTP load balancer
-│       ├── MultipleSolutions/     # Multi-path resilient routing mesh
-│       ├── OSPF/                  # Multi-router OSPF mesh
-│       ├── RIP/                   # Dynamic RIP routing
-│       ├── StaticRouting/         # Multi-hop static routing
-│       ├── TwoHosts/              # Two hosts baseline lab
-│       └── WebServer/             # HTTP server lab
+│   └── ThesisLabs/                        # Kathara declarative network labs
+│       ├── BGP/                           # eBGP inter-AS lab with FRR
+│       ├── Client - Server/               # Web server lab
+│       ├── DNS/                           # Hierarchical BIND9 DNS lab
+│       ├── LoadBalancer/                  # Multi-backend HTTP load balancer
+│       ├── MultipleSolutions/             # Multi-path resilient routing mesh
+│       ├── OSPF/                          # Multi-router OSPF mesh
+│       ├── RIP/                           # Dynamic RIP routing
+│       ├── StaticRouting/                 # Multi-hop static routing
+│       ├── TwoHosts/                      # Two hosts baseline lab
+│       └── WebServer/                     # HTTP server lab
 │
 └── Mininet/
-    ├── Performance Test/          # Process monitor and SVG graph generator
+    ├── Performance Test/                  # Process monitor and SVG graph generator
     │   ├── logger.sh
     │   └── GraphCreator.py
-    └── Thesis Scenarios/          # Mininet Python-driven topologies
-        ├── BGP/                   # FRR eBGP topology
-        ├── Client - Server/       # HTTP client-server scenario
-        ├── DNS/                   # Local DNS resolution
-        ├── LoadBalancer/          # L4/L7 load balancer scenario
-        ├── Multiple Solutions/    # Multi-AS topology with FRR routing
-        ├── OSPF/                  # FRR OSPF topology
-        ├── RIP/                   # FRR RIP topology
-        ├── StaticRouting/         # Static IP forwarding topology
-        └── TwoHosts/              # Two hosts switched topology
+    └── Thesis Scenarios/                  # Mininet Python-driven topologies
+        ├── BGP/                           # FRR eBGP topology
+        ├── Client - Server/               # HTTP client-server scenario
+        ├── DNS/                           # Local DNS resolution
+        ├── LoadBalancer/                  # L4/L7 load balancer scenario
+        ├── Multiple Solutions/            # Multi-AS topology with FRR routing
+        ├── OSPF/                          # FRR OSPF topology
+        ├── RIP/                           # FRR RIP topology
+        ├── StaticRouting/                 # Static IP forwarding topology
+        └── TwoHosts/                      # Two hosts switched topology
 ```
 
 ---
 
-## 🎓 Author & Academic Context
+## 🎓 Academic Credits & Citation
 
-Developed by **Matteo Broglio** for a Master's Thesis research project focusing on network emulation frameworks, software routing architectures, and scalable virtualization testbeds.
+This research was conducted as part of the Final Examination for the Bachelor's Degree in Computer Science (**Laurea Triennale in Informatica**) at **Università degli Studi di Milano - Bicocca**:
+
+- **Candidate**: Matteo Broglio
+- **Advisor**: Prof. Marco Savi
+- **Co-Advisor**: Dott. Jacopo Talpini
+- **Department**: Dipartimento di Informatica, Sistemistica e Comunicazione (DISCo)
+- **Academic Year**: 2024 / 2025
